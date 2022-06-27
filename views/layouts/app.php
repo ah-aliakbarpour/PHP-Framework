@@ -29,7 +29,7 @@
 </nav>
 
 
-<div class="p-3">
+<div class="container">
     {{content}}
 </div>
 

@@ -23,4 +23,9 @@ class Application
     {
         echo $this->router->resolve();
     }
+
+    public function test()
+    {
+        return 'app test';
+    }
 }

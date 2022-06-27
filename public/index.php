@@ -7,18 +7,27 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use app\core\{Application, Router};
+use app\controllers\SiteController;
+use app\core\Application;
 
 
 $app = new Application(dirname(__DIR__));
 
-$app->router->get('/', 'home');
+$app->router->get('/', [SiteController::class, 'home']);
 
-$app->router->get('/contact', 'contact');
+
+$app->router->get('/contact', [SiteController::class, 'contact']);
+
+$app->router->post('contact',  [SiteController::class, 'handleContact']);
+
+
+
+$app->router->get('/string/test', 'home');
 
 $app->router->get('/callback/test', function () {
-    return "Callback test.";
+    return 'callback test';
 });
 
 
-echo $app->run();
+
+$app->run();

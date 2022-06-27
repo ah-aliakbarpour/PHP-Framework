@@ -2,18 +2,18 @@
 
 namespace app\core;
 
+use app\traits\ValidatePath;
+
 class Request
 {
+    use ValidatePath;
 
     public function getPath()
     {
         $path = $_SERVER['REQUEST_URI'] ?? '';
         $position = strpos($path, '?');
 
-        // If path ends with /, remove / from end
-        if ($path[-1] === '/') {
-            $path = substr($path, 0, -1);
-        }
+        $path = $this->validatePath($path);
 
         // Path ends when first ? appear
         if ($position !== false)

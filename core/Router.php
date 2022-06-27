@@ -2,8 +2,11 @@
 
 namespace app\core;
 
+use app\traits\ValidatePath;
+
 class Router
 {
+    use ValidatePath;
 
     public Request $request;
     public Response $response;
@@ -21,13 +24,7 @@ class Router
 
     public function get($path, $callback)
     {
-        // If path does not start with /, add / to start
-        if ($path[0] !== '/')
-            $path = '/' . $path;
-
-        // If path ends with /, remove / from end
-        if ($path[-1] === '/')
-            $path = substr($path, 0, -1);
+        $path = $this->validatePath($path);
 
         // Append to routes
         $this->routes['get'][$path] = $callback;

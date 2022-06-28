@@ -8,6 +8,7 @@ class Application
     public Request $request;
     public Router $router;
     public Response $response;
+    public Controller $controller;
     public static Application $app;
 
     public function __construct($rootDir)
@@ -24,8 +25,13 @@ class Application
         echo $this->router->resolve();
     }
 
-    public function test()
+
+    public function getController(): Controller
     {
-        return 'app test';
+        return $this->controller;
+    }
+    public function setController(): Controller
+    {
+        return $this->controller;
     }
 }

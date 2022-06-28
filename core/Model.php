@@ -10,13 +10,15 @@ abstract class Model
     public const RULE_MIN = 'min';
     public const RULE_MAX = 'max';
     public const RULE_MATCH = 'match';
+    public const RULE_UNIQUE = 'unique';
 
     public const ERROR_MASSAGES = [
         self::RULE_REQUIRED => 'This field is required!',
-        self::RULE_EMAIL => 'This field must be valid email address',
-        self::RULE_MIN => 'Min length of this field must be bigger than {min}',
-        self::RULE_MAX => 'Max length of this field must be less than {max}',
-        self::RULE_MATCH => 'This field must be the same as {match}',
+        self::RULE_EMAIL => 'This field must be valid email address!',
+        self::RULE_MIN => 'Min length of this field must be bigger than {min}!',
+        self::RULE_MAX => 'Max length of this field must be less than {max}!',
+        self::RULE_MATCH => 'This field must be the same as {match}!',
+        self::RULE_UNIQUE => 'Record with this {attribute} is already exists!'
     ];
 
 
@@ -55,6 +57,20 @@ abstract class Model
 
                 if ($ruleName === self::RULE_MATCH && $value !== $this->{$rule['match']})
                     $this->addError($attribute, self::RULE_MATCH, $rule);
+
+                if ($ruleName === self::RULE_UNIQUE) {
+                    $className = $rule['class'];
+                    $uniqueAttr = $rule['attribute'] ?? $attribute;
+                    $tableName = $className::tableName();
+                    $statement = Application::$app->db->prepare("
+                        SELECT * FROM $tableName WHERE $uniqueAttr = :$uniqueAttr;
+                    ");
+                    $statement->bindValue(":$uniqueAttr", $value);
+                    $statement->execute();
+                    $record = $statement->fetchObject();
+                    if ($record)
+                        $this->addError($attribute, self::RULE_UNIQUE, $rule);
+                }
             }
         }
 
@@ -66,7 +82,7 @@ abstract class Model
         $massage = self::ERROR_MASSAGES[$rule] ?? '';
 
         foreach ($params as $key => $value) {
-            $massage = str_replace('{' . $key . '}', $value, $massage);
+            $massage = str_replace('{' . $key . '}', $this->getLabel($value), $massage);
         }
 
         $this->errors[$attribute][] = $massage;
@@ -80,6 +96,17 @@ abstract class Model
     public function getFirstError($attribute)
     {
         return $this->errors[$attribute][0] ?? '';
+    }
+
+
+    public function labels(): array
+    {
+        return [];
+    }
+
+    public function getLabel($attribute): string
+    {
+        return $this->labels()[$attribute] ?? $attribute;
     }
 
 }

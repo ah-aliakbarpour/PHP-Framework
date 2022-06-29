@@ -14,7 +14,7 @@ abstract class Model
 
     public const ERROR_MASSAGES = [
         self::RULE_REQUIRED => 'This field is required!',
-        self::RULE_EMAIL => 'This field must be valid email address!',
+        self::RULE_EMAIL => 'This field must be valid Email address!',
         self::RULE_MIN => 'Min length of this field must be bigger than {min}!',
         self::RULE_MAX => 'Max length of this field must be less than {max}!',
         self::RULE_MATCH => 'This field must be the same as {match}!',
@@ -44,19 +44,19 @@ abstract class Model
                     $ruleName = $rule[0];
 
                 if ($ruleName === self::RULE_REQUIRED && !$value)
-                    $this->addError($attribute, self::RULE_REQUIRED);
+                    $this->addErrorForRule($attribute, self::RULE_REQUIRED);
 
                 if ($ruleName === self::RULE_EMAIL && !filter_var($value, FILTER_VALIDATE_EMAIL))
-                    $this->addError($attribute, self::RULE_EMAIL);
+                    $this->addErrorForRule($attribute, self::RULE_EMAIL);
 
                 if ($ruleName === self::RULE_MIN && strlen($value) < $rule['min'])
-                    $this->addError($attribute, self::RULE_MIN, $rule);
+                    $this->addErrorForRule($attribute, self::RULE_MIN, $rule);
 
                 if ($ruleName === self::RULE_MAX && strlen($value) > $rule['max'])
-                    $this->addError($attribute, self::RULE_MAX, $rule);
+                    $this->addErrorForRule($attribute, self::RULE_MAX, $rule);
 
                 if ($ruleName === self::RULE_MATCH && $value !== $this->{$rule['match']})
-                    $this->addError($attribute, self::RULE_MATCH, $rule);
+                    $this->addErrorForRule($attribute, self::RULE_MATCH, $rule);
 
                 if ($ruleName === self::RULE_UNIQUE) {
                     $className = $rule['class'];
@@ -69,7 +69,7 @@ abstract class Model
                     $statement->execute();
                     $record = $statement->fetchObject();
                     if ($record)
-                        $this->addError($attribute, self::RULE_UNIQUE, $rule);
+                        $this->addErrorForRule($attribute, self::RULE_UNIQUE, $rule);
                 }
             }
         }
@@ -77,7 +77,7 @@ abstract class Model
         return empty($this->errors);
     }
 
-    public function addError(string $attribute, string $rule, $params = [])
+    private function addErrorForRule(string $attribute, string $rule, $params = [])
     {
         $massage = self::ERROR_MASSAGES[$rule] ?? '';
 
@@ -85,6 +85,11 @@ abstract class Model
             $massage = str_replace('{' . $key . '}', $this->getLabel($value), $massage);
         }
 
+        $this->errors[$attribute][] = $massage;
+    }
+
+    public function addError(string $attribute, string $massage)
+    {
         $this->errors[$attribute][] = $massage;
     }
 

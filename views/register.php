@@ -1,3 +1,7 @@
+<?php
+/** @var $model \app\models\User */
+?>
+
 <h2>Register</h2>
 
 

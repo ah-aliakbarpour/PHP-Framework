@@ -25,7 +25,6 @@ class AuthController extends Controller
             $loginForm->loadData($request->getBody());
             if ($loginForm->validation() && $loginForm->login()) {
                 $response->redirect('/');
-                return 0;
             }
         }
 
@@ -35,11 +34,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request)
+    public function register(Request $request, Response $response)
     {
         $this->setLayout('auth');
-
-        $errors = [];
 
         $userModel = new User();
 
@@ -48,7 +45,7 @@ class AuthController extends Controller
 
             if ($userModel->validation() && $userModel->save()) {
                 Application::$app->session->setFlash('success', 'Thanks for registering!');
-                Application::$app->response->redirect('/');
+                $response->redirect('/');
             }
         }
 

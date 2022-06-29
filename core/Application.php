@@ -2,20 +2,22 @@
 
 namespace app\core;
 
+
 class Application
 {
     public static string $ROOT_DIR;
 
+    public string $layout = 'app';
     public string $userClass;
     public Request $request;
     public Router $router;
     public Response $response;
-    public Controller $controller;
     public Database $db;
     public Session $session;
     public ?Dbmodel $user;
 
     public static Application $app;
+    public ?Controller $controller = null;
 
     public function __construct($rootDir, array $config)
     {
@@ -39,7 +41,16 @@ class Application
 
     public function run()
     {
-        echo $this->router->resolve();
+        try {
+            echo $this->router->resolve();
+        } catch (\Exception $exception) {
+
+            $this->response->setStatusCode($exception->getCode());
+
+            echo $this->router->renderView('error', [
+                'exception' => $exception,
+            ]);
+        }
     }
 
 
@@ -69,7 +80,7 @@ class Application
         $this->session->remove('user');
     }
 
-    public function isGuest()
+    public static function isGuest(): bool
     {
         return !self::$app->user;
     }

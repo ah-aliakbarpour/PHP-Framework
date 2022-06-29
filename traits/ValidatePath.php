@@ -4,7 +4,7 @@ namespace app\traits;
 
 trait ValidatePath
 {
-    public function validatePath($path)
+    public function validatePath(string $path): string
     {
         // If path ends with /, remove / from end
         if ($path[-1] === '/')

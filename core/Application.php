@@ -3,6 +3,9 @@
 namespace app\core;
 
 
+use app\core\db\Database;
+use app\core\db\DbModel;
+
 class Application
 {
     public static string $ROOT_DIR;
@@ -15,7 +18,7 @@ class Application
     public Database $db;
     public Session $session;
     public View $view;
-    public ?Dbmodel $user;
+    public ?UserModel $user;
 
     public static Application $app;
     public ?Controller $controller = null;
@@ -65,7 +68,7 @@ class Application
         return $this->controller;
     }
 
-    public function login(DbModel $user): bool
+    public function login(UserModel $user): bool
     {
         $this->user = $user;
         $primaryKey = $user->primaryKey();

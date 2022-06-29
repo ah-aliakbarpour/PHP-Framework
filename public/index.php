@@ -47,12 +47,4 @@ $app->router->get('/logout',  [AuthController::class, 'logout']);
 $app->router->get('/profile',  [AuthController::class, 'profile']);
 
 
-
-$app->router->get('/string/test', 'home');
-
-$app->router->get('/callback/test', function () {
-    return 'callback test';
-});
-
-
 $app->run();
